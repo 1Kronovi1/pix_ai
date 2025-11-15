@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+
+  "scripts": {
+  "dev": "node start.js"
+  }
+}
