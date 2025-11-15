@@ -2,8 +2,10 @@
   "devDependencies": {
     "concurrently": "^9.2.1"
   },
-
   "scripts": {
-  "dev": "node start.js"
+    "dev": "node start.js"
+  },
+  "dependencies": {
+    "pandas": "^0.0.3"
   }
 }

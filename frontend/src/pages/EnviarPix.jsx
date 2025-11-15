@@ -1,90 +1,130 @@
-// src/pages/EnviarPix.jsx
-import { useState } from "react";
-import api from "../api";
+// src/pages/Transacao.jsx
+import React, { useState } from "react";
+import { analisarTransacao } from "../api"; // usa a função que criamos em api.js
 
-export default function EnviarPix(){
-  const [destino, setDestino] = useState("");
+export default function Transacao() {
+  const [remetente, setRemetente] = useState("");
+  const [destinatario, setDestinatario] = useState("");
   const [valor, setValor] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState(null);
+  const [error, setError] = useState(null);
 
-  // Ao confirmar a senha, envia ao backend para análise
-  const confirmar = async () => {
+  const submit = async (e) => {
+    e.preventDefault();
     setLoading(true);
     setResultado(null);
+    setError(null);
+
     try {
-      // envia como FormData (compatível com FastAPI que espera form fields)
-      const form = new FormData();
-      form.append("remetente", "Usuário Simulado"); // campo fixo; no seu caso pode ser dinâmico
-      form.append("destinatario", destino);
-      form.append("valor", parseFloat(valor));
-      // se seu backend usa /pix em vez de /assess, altere aqui para "/pix"
-      const res = await api.post("/assess", form);
-      // o backend deve retornar um status simples: "seguro" ou "suspeito"
-      const status = res.data.status || (res.data.score_risco && res.data.score_risco > 0.7 ? "suspeito" : "seguro");
-      // IA invisível: mostramos apenas uma mensagem final
-      if(status === "suspeito"){
-        setResultado({ ok: false, message: "Transação bloqueada por medidas de segurança." });
-      } else {
-        setResultado({ ok: true, message: "PIX autorizado com sucesso." });
-      }
+      const data = await analisarTransacao({
+        remetente,
+        destinatario,
+        valor: parseFloat(valor),
+      });
+      setResultado(data);
     } catch (err) {
       console.error(err);
-      setResultado({ ok: false, message: "Erro ao comunicar com o servidor. Tente novamente." });
+      setError("Erro ao comunicar com o servidor. Tente novamente.");
     } finally {
       setLoading(false);
-      setShowModal(false);
-      setSenha("");
     }
   };
 
-  const submeter = (e) => {
-    e.preventDefault();
-    // validações rápidas
-    if(!destino || !valor) return alert("Preencha destinatário e valor.");
-    setShowModal(true);
-  };
-
   return (
-    <div className="container">
-      <div className="card" style={{maxWidth:520, margin:"0 auto"}}>
-        <h3 style={{marginTop:0}}>Enviar PIX</h3>
-        <p className="small">Fluxo: digite destino → valor → confirme com sua senha.</p>
+    <div style={{ minHeight: "80vh", padding: 20, display: "flex", justifyContent: "center" }}>
+      <div style={{ width: 520 }}>
+        <div style={{ background: "#fff", padding: 20, borderRadius: 12, boxShadow: "0 6px 20px rgba(2,6,23,0.06)" }}>
+          <h2 style={{ margin: 0, marginBottom: 10 }}>💸 Fazer PIX</h2>
+          <p style={{ color: "#6b7280", marginTop: 6, marginBottom: 14 }}>Preencha os dados e confirme para análise automática.</p>
 
-        <form className="form" onSubmit={submeter} style={{marginTop:12}}>
-          <input className="input" placeholder="Chave PIX / Destinatário" value={destino} onChange={e=>setDestino(e.target.value)} />
-          <input className="input" placeholder="Valor (ex: 120.50)" type="number" step="0.01" value={valor} onChange={e=>setValor(e.target.value)} />
-          <div style={{display:"flex", gap:8}}>
-            <button className="btn" type="submit">Continuar</button>
-            <button type="button" className="btn ghost" onClick={()=>{ setDestino(""); setValor(""); }}>Limpar</button>
-          </div>
-        </form>
+          <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
+            <label style={{ fontWeight: 600 }}>Remetente</label>
+            <input
+              className="input"
+              value={remetente}
+              onChange={(e) => setRemetente(e.target.value)}
+              placeholder="Seu nome"
+              required
+            />
 
-        {resultado && (
-          <div style={{marginTop:14}}>
-            <div className={resultado.ok ? "result-ok" : "result-bad"}>{resultado.message}</div>
-          </div>
-        )}
-      </div>
+            <label style={{ fontWeight: 600 }}>Destinatário (chave)</label>
+            <input
+              className="input"
+              value={destinatario}
+              onChange={(e) => setDestinatario(e.target.value)}
+              placeholder="Chave PIX ou nome"
+              required
+            />
 
-      {/* Modal de senha */}
-      {showModal && (
-        <div className="modal-backdrop">
-          <div className="modal">
-            <h3>Confirme com sua senha</h3>
-            <p className="small">Para autorizar esta transação, insira sua senha de confirmação.</p>
-            <input className="input" type="password" placeholder="Senha" value={senha} onChange={e=>setSenha(e.target.value)} />
-            <div className="foot">
-              <button className="btn ghost" onClick={()=>{ setShowModal(false); setSenha(""); }}>Cancelar</button>
-              <button className="btn" onClick={confirmar} disabled={loading || senha.length < 4}>
-                {loading ? "Aguarde..." : "Confirmar"}
+            <label style={{ fontWeight: 600 }}>Valor (R$)</label>
+            <input
+              className="input"
+              type="number"
+              step="0.01"
+              value={valor}
+              onChange={(e) => setValor(e.target.value)}
+              placeholder="Ex: 120.50"
+              required
+            />
+
+            <div style={{ display: "flex", gap: 8 }}>
+              <button
+                className="btn"
+                type="submit"
+                style={{ flex: 1, background: "#0f766e", color: "white", fontWeight: 700 }}
+                disabled={loading}
+              >
+                {loading ? "Analisando..." : "Continuar"}
+              </button>
+
+              <button
+                type="button"
+                className="btn ghost"
+                onClick={() => { setRemetente(""); setDestinatario(""); setValor(""); setResultado(null); setError(null); }}
+                style={{ flex: 1, border: "1px solid #e6e9ee", background: "transparent" }}
+              >
+                Limpar
               </button>
             </div>
-          </div>
+          </form>
+
+          {error && (
+            <div style={{ marginTop: 12, padding: 12, borderRadius: 10, background: "#fee2e2", color: "#b91c1c" }}>
+              {error}
+            </div>
+          )}
+
+          {resultado && (
+            <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: "#f8fafc", border: "1px solid #e6eef3" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontSize: 14, color: "#374151", fontWeight: 700 }}>
+                    {resultado.status === "suspeito" ? "🚨 Suspeito" : "✅ Seguro"}
+                  </div>
+                  <div style={{ fontSize: 13, color: "#6b7280" }}>{resultado.mensagem}</div>
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ fontSize: 12, color: "#6b7280" }}>Score</div>
+                  <div style={{ fontWeight: 800, fontSize: 16 }}>{resultado.score_risco}</div>
+                </div>
+              </div>
+
+              {/* barra de risco */}
+              <div style={{ marginTop: 12, height: 10, borderRadius: 8, background: "#e6eef3", overflow: "hidden" }}>
+                <div
+                  style={{
+                    height: "100%",
+                    width: `${Math.min(100, (resultado.score_risco || 0) * 100)}%`,
+                    background: resultado.score_risco >= 0.7 ? "#ef4444" : resultado.score_risco >= 0.4 ? "#f59e0b" : "#10b981",
+                    transition: "width 700ms ease"
+                  }}
+                />
+              </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
