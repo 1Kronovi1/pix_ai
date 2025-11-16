@@ -9,8 +9,14 @@ import joblib
 CSV_PATH = "dataset_pix.csv"
 MODEL_PATH = "model.joblib"
 SCALER_PATH = "scaler.joblib"
+BLACKLIST_PATH = "lista_negra.csv"
 
 def build_features(df):
+    # Carrega lista negra
+
+    lista_negra_df = pd.read_csv(BLACKLIST_PATH)
+    lista_negra_df.columns = ["conta", "suspeito"]
+
     # Espera colunas: remetente, destinatario, valor, historico_destinatario, golpe (opcional)
     # Cria agregações por remetente simples (média por remetente)
     ag = df.groupby("remetente")["valor"].agg(["mean","std","median","max","count"]).reset_index()
@@ -24,8 +30,21 @@ def build_features(df):
     df["is_large"] = (df["valor"] > 2*df["median_out"]).astype(int)
     df["reciprocity"] = 0  # se não tiver dados, manter 0
 
-    # selecione features numéricas
-    features = ["valor","amount_zscore","has_no_history","is_large","historico_destinatario","avg_out","cnt_out"]
+    # Merge com destinatário
+    df = df.merge(lista_negra_df, left_on="destinatario", right_on="conta", how="left")
+    df["suspeito_dest"] = df["suspeito"].fillna(0)
+
+    # LISTA DE FEATURES DA IA
+    features = [
+        "valor",
+        "amount_zscore",
+        "has_no_history",
+        "is_large",
+        "historico_destinatario",
+        "avg_out",
+        "cnt_out",
+        "suspeito_dest"
+        ]
     # preencher NaNs
     X = df[features].fillna(0).values
     return X, df
@@ -37,12 +56,18 @@ def train():
     scaler = StandardScaler()
     Xs = scaler.fit_transform(X)
 
-    clf = IsolationForest(n_estimators=200, max_samples="auto", contamination=0.02, random_state=42)
+    clf = IsolationForest(
+        n_estimators=200, 
+        contamination=0.10, 
+        random_state=42
+    )
+
     clf.fit(Xs)
 
     joblib.dump(clf, MODEL_PATH)
     joblib.dump(scaler, SCALER_PATH)
-    print("Modelo salvo em", MODEL_PATH)
+
+    print("Modelo salvo com lista negra, features melhoradas e sensibilidade maior em", MODEL_PATH)
 
 if __name__ == "__main__":
     train()
