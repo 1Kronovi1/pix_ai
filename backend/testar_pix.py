@@ -1,44 +1,37 @@
 # testar_pix.py
 import requests
+import random
 
-# URL do seu backend FastAPI
-BASE_URL = "http://127.0.0.1:8000"  # ajuste a porta se necessário
+BASE_URL = "http://127.0.0.1:8000"
 
-# Destinatários do teste
 destinatarios = ["LojaX", "MercadoA", "AmigoY", "GolpistaZ", "ContaFake"]
-
-# Remetentes do teste
 remetentes = ["Bruno", "Líbia", "Chris", "Gonçalves", "Gabriel"]
+valores = [10, 20, 35, 50, 75, 100, 200, 300, 500, 800, 1000, 1500, 2500, 5000, 10000]
 
-# Valores das transações
-valores = [10, 100, 500, 1000, 10000]
-
-# ================================
-# 1. Limpar histórico antes do teste
-# ================================
+# =============================================
+# 1. Limpar Histórico
+# =============================================
 try:
-    requests.delete(f"{BASE_URL}/transacoes/limpar")  # ou /clear_logs se não atualizou endpoint
+    requests.delete(f"{BASE_URL}/transacoes/limpar")
 except:
-    pass  # não faz nada se der erro, apenas garantir limpeza
+    pass
 
-# ================================
-# 2. Executar todas as transações
-# ================================
-for destinatario in destinatarios:
-    for i, remetente in enumerate(remetentes):
-        valor = valores[i]  # pega o valor correspondente
-        data = {
-            "remetente": remetente,
-            "destinatario": destinatario,
-            "valor": valor
-        }
-        try:
-            requests.post(f"{BASE_URL}/assess", data=data)
-        except:
-            pass  # caso dê algum erro de rede, ignora para não travar o loop
+# =============================================
+# 2. Criar 200 transações aleatórias
+# =============================================
+total = 200
+for _ in range(total):
+    remetente = random.choice(remetentes)
+    destinatario = random.choice(destinatarios)
+    valor = random.choice(valores)
 
-# ================================
-# 3. Teste completo
-# ================================
-# O backend grava automaticamente todas as transações no 'transacoes_log.csv'
-# Nenhum output no console, como solicitado
+    data = {
+        "remetente": remetente,
+        "destinatario": destinatario,
+        "valor": valor
+    }
+
+    try:
+        requests.post(f"{BASE_URL}/assess", data=data)
+    except:
+        pass

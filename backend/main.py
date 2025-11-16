@@ -6,11 +6,13 @@ import random
 import numpy as np
 from joblib import load
 import csv
+import sqlite3
 import os
 from datetime import datetime
 from typing import Tuple
 
 LOG_PATH = "transacoes_log.csv"
+DB_PATH = "database.db"
 
 # ======================================================
 # 📂 Criar arquivo de log caso não exista (atualizado com novas colunas)
@@ -239,9 +241,15 @@ def logs():
 def get_transacoes():
     return {"transacoes": listar_transacoes()}
 
-@app.delete("/clear_logs")
-def clear_logs():
-    # Recria o CSV com o cabeçalho original (com as novas colunas)
+@app.delete("/transacoes/limpar")
+def limpar_transacoes():
+    import sqlite3
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM transacoes")
+    conn.commit()
+    conn.close()
+
     with open(LOG_PATH, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([
@@ -256,6 +264,4 @@ def clear_logs():
             "suspeito_dest"
         ])
 
-    return JSONResponse(content={
-        "mensagem": "Logs apagados com sucesso!"
-    })
+    return {"mensagem": "Histórico, banco e CSV apagados com sucesso!"}

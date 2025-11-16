@@ -51,7 +51,7 @@ export default function Historico() {
     if (!confirm("Tem certeza que deseja limpar o histórico?")) return;
     setClearing(true);
     try {
-      await api.delete("/clear_logs");
+      await api.delete("/transacoes/limpar");
       setRows([]);
     } catch (err) {
       console.error(err);
