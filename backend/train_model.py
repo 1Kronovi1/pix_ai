@@ -1,4 +1,4 @@
-# backend/train_model.py
+# backend/train_model.py (atualizado)
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
@@ -13,7 +13,6 @@ BLACKLIST_PATH = "lista_negra.csv"
 
 def build_features(df):
     # Carrega lista negra
-
     lista_negra_df = pd.read_csv(BLACKLIST_PATH)
     lista_negra_df.columns = ["conta", "suspeito"]
 
@@ -30,11 +29,15 @@ def build_features(df):
     df["is_large"] = (df["valor"] > 2*df["median_out"]).astype(int)
     df["reciprocity"] = 0  # se não tiver dados, manter 0
 
-    # Merge com destinatário
+    # Merge com destinatário (lista negra)
     df = df.merge(lista_negra_df, left_on="destinatario", right_on="conta", how="left")
     df["suspeito_dest"] = df["suspeito"].fillna(0)
 
-    # LISTA DE FEATURES DA IA
+    # feature nova: valor relativo (valor / avg_out)
+    df["avg_out_safe"] = df["avg_out"].replace(0, np.nan).fillna(1)
+    df["valor_relativo"] = df["valor"] / df["avg_out_safe"]
+
+    # LISTA DE FEATURES DA IA (agora inclui valor_relativo)
     features = [
         "valor",
         "amount_zscore",
@@ -43,7 +46,8 @@ def build_features(df):
         "historico_destinatario",
         "avg_out",
         "cnt_out",
-        "suspeito_dest"
+        "suspeito_dest",
+        "valor_relativo"
         ]
     # preencher NaNs
     X = df[features].fillna(0).values
@@ -57,8 +61,8 @@ def train():
     Xs = scaler.fit_transform(X)
 
     clf = IsolationForest(
-        n_estimators=200, 
-        contamination=0.10, 
+        n_estimators=200,
+        contamination=0.10,
         random_state=42
     )
 

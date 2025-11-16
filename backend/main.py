@@ -1,3 +1,4 @@
+# main.py (atualizado)
 from fastapi import FastAPI, Form
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,11 +8,12 @@ from joblib import load
 import csv
 import os
 from datetime import datetime
+from typing import Tuple
 
 LOG_PATH = "transacoes_log.csv"
 
 # ======================================================
-# 📂 Criar arquivo de log caso não exista
+# 📂 Criar arquivo de log caso não exista (atualizado com novas colunas)
 # ======================================================
 if not os.path.exists(LOG_PATH):
     with open(LOG_PATH, "w", newline="", encoding="utf-8") as f:
@@ -21,19 +23,21 @@ if not os.path.exists(LOG_PATH):
             "remetente",
             "destinatario",
             "valor",
+            "valor_relativo",
             "score",
+            "boost_aplicado",
             "status",
             "suspeito_dest"
         ])
 
 # ======================================================
-# 🧠 Carregar IA
+# 🧠 Carregar IA (modelo + scaler)
 # ======================================================
 modelo = load("model.joblib")
 scaler = load("scaler.joblib")
 
 # ======================================================
-# 🚨 Lista negra
+# 🚨 Lista negra (mantida)
 # ======================================================
 lista_negra = {
     "GolpistaZ",
@@ -50,21 +54,26 @@ from database import (
     criar_tabela,
     inserir_transacao,
     listar_transacoes,
-    atualizar_status
+    atualizar_status,
+    DB_NAME  # para stats internos se necessário
 )
+# Importar helpers de stats
+from stats import obter_media_remetente, obter_historico_destinatario
 
 # ======================================================
-# 🧠 Função: análise IA
+# 🧠 Função: análise IA (agora inclui valor_relativo)
 # ======================================================
-def analisar_transacao_ml(valor, media_remetente, historico_destinatario, suspeito_dest):
+def analisar_transacao_ml(valor, media_remetente, historico_destinatario, suspeito_dest, valor_relativo):
     """
-    Reconstrói exatamente as features do treino.
+    Reconstrói as features exatamente como no treino.
+    OBS: precisa estar alinhado com train_model.py
     """
 
-    avg_out = media_remetente
+    # Proteções básicas
+    avg_out = media_remetente if media_remetente is not None else 1.0
     std_out = 1
-    median_out = media_remetente
-    cnt_out = 1
+    median_out = media_remetente if media_remetente is not None else valor
+    cnt_out = 1 if media_remetente is None else 1  # manter compatibilidade com antigo (treino espera cnt_out)
 
     amount_zscore = (valor - avg_out) / std_out
     has_no_history = 1 if historico_destinatario == 0 else 0
@@ -78,7 +87,8 @@ def analisar_transacao_ml(valor, media_remetente, historico_destinatario, suspei
         historico_destinatario,
         avg_out,
         cnt_out,
-        suspeito_dest
+        suspeito_dest,
+        valor_relativo
     ]
 
     entrada = np.array([entrada])
@@ -90,11 +100,10 @@ def analisar_transacao_ml(valor, media_remetente, historico_destinatario, suspei
     classe = "suspeita" if pred == -1 else "normal"
     return score, classe
 
-
 # ======================================================
 # 🚀 FastAPI
 # ======================================================
-app = FastAPI(title="PIX AI - Antifraude Inteligente")
+app = FastAPI(title="PIX AI - Antifraude Inteligente (V2 patch)")
 
 app.add_middleware(
     CORSMiddleware,
@@ -115,52 +124,73 @@ def assess(
     destinatario: str = Form(...),
     valor: float = Form(...)
 ):
+    # ===== Estatísticas reais (substitui random)
+    media_remetente = obter_media_remetente(remetente)
+    # se não houver média histórica, usar fallback razoável (ex.: 100)
+    if media_remetente is None:
+        media_remetente = 100.0
 
-    # Em produção → viria do banco
-    media_remetente = random.uniform(50, 800)
-    historico_destinatario = random.randint(0, 5)
+    historico_destinatario = obter_historico_destinatario(destinatario)
 
     suspeito_dest = 1 if destinatario in lista_negra else 0
 
-    # ======================================================
-    # 🔥 BOOST DE RISCO (corrige 100% dos erros detectados)
-    # ======================================================
+    # valor relativo (feature nova)
+    valor_relativo = valor / (media_remetente if media_remetente > 0 else 1.0)
 
-    boost = 0
+    # ======================================================
+    # 🔥 BOOST DE RISCO REFINADO (graduais e explicitos)
+    # ======================================================
+    boost = 0.0
 
-    # 1) Penalização forte se estiver na lista negra
+    # Penalização muito forte se estiver na lista negra
     if suspeito_dest == 1:
-        boost += 0.25
+        boost += 0.40  # aumento da penalidade (era 0.25)
 
-    # 2) Valores muito altos + destinatário sem histórico
+    # Valores muito altos + destinatário sem histórico
     if historico_destinatario == 0 and valor >= 8000:
         boost += 0.15
 
-    # 3) Redução de falso positivo para destinatário frequente
-    if historico_destinatario >= 3 and valor <= 10000 and suspeito_dest == 0:
-        boost -= 0.10
+    # Redução de falso positivo para destinatário frequente (ajustado)
+    if historico_destinatario >= 3 and valor <= 5000 and suspeito_dest == 0:
+        boost -= 0.08  # leve redução
+
+    # Proteção: se valor_relativo for pequeno (transação abaixo da média) dar redução leve
+    if valor_relativo < 0.5 and suspeito_dest == 0:
+        boost -= 0.03
 
     # ======================================================
-    # 🧠 Rodar IA normalmente
+    # 🧠 Rodar IA (passando valor_relativo)
     # ======================================================
     score, classe = analisar_transacao_ml(
         valor,
         media_remetente,
         historico_destinatario,
-        suspeito_dest
+        suspeito_dest,
+        valor_relativo
     )
 
-    # Aplica boost ao score do modelo
-    score += boost
-
-    # Novo critério HÍBRIDO (regras + IA)
-    status = "suspeito" if (score > -0.60 or classe == "suspeita") else "seguro"
-
-    # Salvar no banco
-    inserir_transacao(remetente, destinatario, valor, round(score, 3), status)
+    # Aplica boost ao score do modelo (score é negativo normalmente no isolation-forest scoring)
+    score_final = score + boost
 
     # ======================================================
-    # 📝 SALVAR NO CSV DE LOGS PARA CALIBRAR A IA
+    # Threshold condicional (reduz falsos positivos)
+    # ======================================================
+    # Regras:
+    # - Se destinatário está na lista negra => suspeito
+    # - Se score_final > -0.55 e (valor_relativo > 2 ou valor > 2000) => suspeito
+    # - Caso contrário => seguro
+    if suspeito_dest == 1:
+        status = "suspeito"
+    elif (score_final > -0.55) and (valor_relativo > 2 or valor > 2000):
+        status = "suspeito"
+    else:
+        status = "seguro"
+
+    # Salvar no banco (usar score_final arredondado)
+    inserir_transacao(remetente, destinatario, valor, round(float(score_final), 3), status)
+
+    # ======================================================
+    # 📝 SALVAR NO CSV DE LOGS PARA CALIBRAR A IA (com campos extras)
     # ======================================================
     with open(LOG_PATH, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
@@ -168,8 +198,10 @@ def assess(
             datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             remetente,
             destinatario,
-            valor,
-            float(round(score, 3)),
+            float(valor),
+            round(float(valor_relativo), 3),
+            float(round(score_final, 3)),
+            round(float(boost), 3),
             status,
             suspeito_dest
         ])
@@ -178,11 +210,12 @@ def assess(
         "remetente": remetente,
         "destinatario": destinatario,
         "valor": valor,
-        "score_risco": round(score, 3),
+        "valor_relativo": round(float(valor_relativo), 3),
+        "score_risco": round(float(score_final), 3),
+        "boost_aplicado": round(float(boost), 3),
         "status": status,
         "mensagem": "⚠️ Transação suspeita!" if status == "suspeito" else "✅ Transação segura."
     })
-
 
 
 # ======================================================
@@ -195,7 +228,7 @@ def confirm(id_transacao: int = Form(...)):
 
 
 # ======================================================
-# 📜 Histórico
+# 📜 Histórico / Transações / Limpar logs (compatíveis)
 # ======================================================
 @app.get("/logs")
 def logs():
@@ -208,10 +241,20 @@ def get_transacoes():
 
 @app.delete("/clear_logs")
 def clear_logs():
-    # Recria o CSV com o cabeçalho original
+    # Recria o CSV com o cabeçalho original (com as novas colunas)
     with open(LOG_PATH, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["timestamp", "remetente", "destinatario", "valor", "score", "status", "suspeito_dest"])
+        writer.writerow([
+            "timestamp",
+            "remetente",
+            "destinatario",
+            "valor",
+            "valor_relativo",
+            "score",
+            "boost_aplicado",
+            "status",
+            "suspeito_dest"
+        ])
 
     return JSONResponse(content={
         "mensagem": "Logs apagados com sucesso!"

@@ -1,21 +1,40 @@
 // src/pages/Historico.jsx
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../api";
 
 export default function Historico() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [clearing, setClearing] = useState(false);
 
-  async function fetch() {
+  async function fetchTransacoes() {
+    setLoading(true);
     try {
       const res = await api.get("/transacoes");
       const data = res.data.transacoes || res.data.historico || [];
-
-      const normalized = data.map(row => {
+      const normalized = data.map((row) => {
         if (Array.isArray(row)) {
-          return { id: row[0], remetente: row[1], destinatario: row[2], valor: row[3] };
+          // [id, remetente, destinatario, valor, ...]
+          return {
+            id: row[0],
+            remetente: row[1],
+            destinatario: row[2],
+            valor: row[3],
+            status: row[5] || "seguro",
+            suspeito_dest: row[6] || 0,
+            timestamp: row[0] ? "" : ""
+          };
         }
-        return row;
+        // possível objeto já normalizado
+        return {
+          id: row.id || row[0],
+          remetente: row.remetente,
+          destinatario: row.destinatario,
+          valor: row.valor,
+          status: row.status || "seguro",
+          suspeito_dest: row.suspeito_dest || 0,
+          timestamp: row.timestamp || ""
+        };
       });
 
       setRows(normalized);
@@ -28,64 +47,105 @@ export default function Historico() {
   }
 
   async function limpar() {
-  // eslint-disable-next-line no-restricted-globals
-  if(confirm("Tem certeza que deseja limpar o histórico?")) {
+    // eslint-disable-next-line no-restricted-globals
+    if (!confirm("Tem certeza que deseja limpar o histórico?")) return;
+    setClearing(true);
     try {
-      await api.delete("/clear_logs"); // mudou de /transacoes/limpar para /clear_logs
-      setRows([]); // limpa o frontend imediatamente
-    } catch(err) {
+      await api.delete("/clear_logs");
+      setRows([]);
+    } catch (err) {
       console.error(err);
-      alert("Erro ao limpar.");
+      alert("Erro ao limpar histórico.");
+    } finally {
+      setClearing(false);
     }
   }
-}
 
-  useEffect(() => { fetch(); }, []);
+  useEffect(() => {
+    fetchTransacoes();
+    // opcional: atualizar a cada X segundos
+    // const id = setInterval(fetchTransacoes, 15000);
+    // return () => clearInterval(id);
+  }, []);
 
   return (
-    <div className="container">
-      <div className="card">
-        <h3 style={{ marginTop: 0 }}>Histórico de Transações</h3>
+    <div className="container" style={{ padding: 12 }}>
+      <div className="card" style={{ padding: 12 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h3 style={{ margin: 0 }}>Histórico de Transações</h3>
+          <div>
+            <button
+              onClick={fetchTransacoes}
+              className="btn ghost"
+              style={{ marginRight: 8 }}
+              disabled={loading}
+            >
+              Atualizar
+            </button>
 
-        {/* Botão de limpar histórico */}
-        <button
-          onClick={limpar}
-          className="btn btn-danger"
-          style={{ marginBottom: 10 }}
-        >
-          Limpar Histórico
-        </button>
+            <button
+              onClick={limpar}
+              className="btn btn-danger"
+              disabled={clearing}
+            >
+              {clearing ? "Limpando..." : "Limpar Histórico"}
+            </button>
+          </div>
+        </div>
 
-        {loading ? (
-          <p className="small">Carregando...</p>
-        ) : (
-          <table className="table" style={{ marginTop: 12 }}>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Remetente</th>
-                <th>Destinatário</th>
-                <th>Valor (R$)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.length === 0 && (
-                <tr>
-                  <td colSpan="4" className="small">Sem registros</td>
-                </tr>
-              )}
+        <div style={{ marginTop: 12 }}>
+          {loading ? (
+            <div className="small">Carregando...</div>
+          ) : rows.length === 0 ? (
+            <div className="small">Sem registros</div>
+          ) : (
+            <div style={{ display: "grid", gap: 10 }}>
+              {rows.map((r) => (
+                <div
+                  key={r.id}
+                  className="card"
+                  style={{
+                    padding: 10,
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                  }}
+                >
+                  <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                    <div
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: 8,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: r.suspeito_dest === 1 || r.status === "suspeito" ? "#fee2e2" : "#ecfdf5",
+                        color: r.suspeito_dest === 1 || r.status === "suspeito" ? "#b91c1c" : "#059669",
+                        fontWeight: 700
+                      }}
+                    >
+                      {r.remetente ? r.remetente.charAt(0).toUpperCase() : "R"}
+                    </div>
+                    <div>
+                      <div style={{ fontWeight: 700 }}>{r.destinatario}</div>
+                      <div className="small" style={{ color: "#6b7280" }}>{r.timestamp || ""}</div>
+                    </div>
+                  </div>
 
-              {rows.map(r => (
-                <tr key={r.id}>
-                  <td>{r.id}</td>
-                  <td>{r.remetente}</td>
-                  <td>{r.destinatario}</td>
-                  <td>R$ {Number(r.valor).toFixed(2)}</td>
-                </tr>
+                  <div style={{ textAlign: "right" }}>
+                    <div style={{ fontWeight: 800 }}>
+                      R$ {Number(r.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                    </div>
+                    <div className="small" style={{ color: r.status === "suspeito" ? "#b91c1c" : "#059669" }}>
+                      {r.status === "suspeito" ? "Suspeito" : "Seguro"}
+                    </div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

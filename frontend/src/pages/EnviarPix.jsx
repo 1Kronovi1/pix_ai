@@ -1,8 +1,8 @@
-// src/pages/Transacao.jsx
+// src/pages/EnviarPix.jsx
 import React, { useState } from "react";
-import { analisarTransacao } from "../api"; // usa a função que criamos em api.js
+import { analisarTransacao } from "../api";
 
-export default function Transacao() {
+export default function EnviarPix() {
   const [remetente, setRemetente] = useState("");
   const [destinatario, setDestinatario] = useState("");
   const [valor, setValor] = useState("");
@@ -17,10 +17,11 @@ export default function Transacao() {
     setError(null);
 
     try {
+      // enviar valor como string (FormData espera string)
       const data = await analisarTransacao({
         remetente,
         destinatario,
-        valor: parseFloat(valor),
+        valor: String(valor)
       });
       setResultado(data);
     } catch (err) {
@@ -31,12 +32,22 @@ export default function Transacao() {
     }
   };
 
+  const limpar = () => {
+    setRemetente("");
+    setDestinatario("");
+    setValor("");
+    setResultado(null);
+    setError(null);
+  };
+
   return (
-    <div style={{ minHeight: "80vh", padding: 20, display: "flex", justifyContent: "center" }}>
-      <div style={{ width: 520 }}>
-        <div style={{ background: "#fff", padding: 20, borderRadius: 12, boxShadow: "0 6px 20px rgba(2,6,23,0.06)" }}>
-          <h2 style={{ margin: 0, marginBottom: 10 }}>💸 Fazer PIX</h2>
-          <p style={{ color: "#6b7280", marginTop: 6, marginBottom: 14 }}>Preencha os dados e confirme para análise automática.</p>
+    <div style={{ minHeight: "80vh", padding: 12, display: "flex", justifyContent: "center" }}>
+      <div style={{ width: "100%", maxWidth: 540 }}>
+        <div className="card" style={{ padding: 16 }}>
+          <h2 style={{ margin: 0, marginBottom: 8 }}>💸 Enviar PIX</h2>
+          <p className="small" style={{ marginTop: 6, marginBottom: 12, color: "#6b7280" }}>
+            Preencha os dados e confirme para análise automática. A IA analisará risco e retornará resultado.
+          </p>
 
           <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
             <label style={{ fontWeight: 600 }}>Remetente</label>
@@ -44,7 +55,7 @@ export default function Transacao() {
               className="input"
               value={remetente}
               onChange={(e) => setRemetente(e.target.value)}
-              placeholder="Seu nome"
+              placeholder="Seu nome (ex: Bruno)"
               required
             />
 
@@ -53,7 +64,7 @@ export default function Transacao() {
               className="input"
               value={destinatario}
               onChange={(e) => setDestinatario(e.target.value)}
-              placeholder="Chave PIX ou nome"
+              placeholder="Chave PIX ou nome (ex: LojaX)"
               required
             />
 
@@ -72,7 +83,7 @@ export default function Transacao() {
               <button
                 className="btn"
                 type="submit"
-                style={{ flex: 1, background: "#0f766e", color: "white", fontWeight: 700 }}
+                style={{ flex: 1, background: "#6b21a8", color: "#fff", fontWeight: 700 }}
                 disabled={loading}
               >
                 {loading ? "Analisando..." : "Continuar"}
@@ -81,7 +92,7 @@ export default function Transacao() {
               <button
                 type="button"
                 className="btn ghost"
-                onClick={() => { setRemetente(""); setDestinatario(""); setValor(""); setResultado(null); setError(null); }}
+                onClick={limpar}
                 style={{ flex: 1, border: "1px solid #e6e9ee", background: "transparent" }}
               >
                 Limpar
@@ -96,17 +107,20 @@ export default function Transacao() {
           )}
 
           {resultado && (
-            <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: "#f8fafc", border: "1px solid #e6eef3" }}>
+            <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: "#fff", border: "1px solid #eee" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div>
-                  <div style={{ fontSize: 14, color: "#374151", fontWeight: 700 }}>
-                    {resultado.status === "suspeito" ? "🚨 Suspeito" : "✅ Seguro"}
+                  <div style={{ fontSize: 14, color: resultado.status === "suspeito" ? "#b91c1c" : "#059669", fontWeight: 800 }}>
+                    {resultado.status === "suspeito" ? "🚨 Transação Suspeita" : "✅ Transação Segura"}
                   </div>
                   <div style={{ fontSize: 13, color: "#6b7280" }}>{resultado.mensagem}</div>
                 </div>
                 <div style={{ textAlign: "right" }}>
                   <div style={{ fontSize: 12, color: "#6b7280" }}>Score</div>
                   <div style={{ fontWeight: 800, fontSize: 16 }}>{resultado.score_risco}</div>
+                  {resultado.boost_aplicado !== undefined && (
+                    <div style={{ fontSize: 11, color: "#9ca3af" }}>Boost: {resultado.boost_aplicado}</div>
+                  )}
                 </div>
               </div>
 
@@ -115,8 +129,9 @@ export default function Transacao() {
                 <div
                   style={{
                     height: "100%",
-                    width: `${Math.min(100, (resultado.score_risco || 0) * 100)}%`,
-                    background: resultado.score_risco >= 0.7 ? "#ef4444" : resultado.score_risco >= 0.4 ? "#f59e0b" : "#10b981",
+                    // transform score (negativo) to 0-100 for visualization in a safe way
+                    width: `${Math.min(100, Math.max(0, (Number(resultado.score_risco) + 1.5) / 2.5 * 100))}%`,
+                    background: resultado.status === "suspeito" ? "#ef4444" : "#10b981",
                     transition: "width 700ms ease"
                   }}
                 />

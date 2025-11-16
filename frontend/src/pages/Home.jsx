@@ -1,25 +1,142 @@
 // src/pages/Home.jsx
-export default function Home(){
-  return (
-    <div className="container">
-      <div className="card">
-        <h2 style={{margin:0}}>Bem-vindo ao Simulador PIX</h2>
-        <p className="small" style={{marginTop:8}}>Interface clara e minimalista para demonstrar validação de transações via IA. Use <strong>Enviar PIX</strong> para simular uma transferência.</p>
+import React, { useEffect, useState } from "react";
+import api from "../api";
+import { Link } from "react-router-dom";
+import { Home as HomeIcon, Send, History } from "lucide-react";
 
-        <div style={{display:"flex", gap:16, marginTop:18}}>
-          <div style={{flex:1}} className="card">
-            <div style={{fontSize:12, color:"#6b7280"}}>Saldo disponível</div>
-            <div style={{fontSize:22, fontWeight:800, marginTop:6}}>R$ 3.250,00</div>
-            <div className="small" style={{marginTop:8}}>Conta: Conta de Teste • BR</div>
+export default function Home() {
+  const [saldo] = useState(3250.0);
+  const [ultima, setUltima] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Busca última transação
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      try {
+        const res = await api.get("/transacoes");
+        const rows = res.data.transacoes || res.data.historico || [];
+        if (!mounted) return;
+
+        if (Array.isArray(rows) && rows.length > 0) {
+          const first = rows[0];
+          const normalized = Array.isArray(first)
+            ? { id: first[0], remetente: first[1], destinatario: first[2], valor: first[3] }
+            : first;
+          setUltima(normalized);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar transacoes na Home:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+    load();
+    return () => (mounted = false);
+  }, []);
+
+  // 🔥 Componente do MENU FIXO
+  const MenuInferior = () => (
+    <div
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        left: "50%",
+        transform: "translateX(-50%)",
+        background: "white",
+        padding: "12px 25px",
+        borderRadius: "40px",
+        display: "flex",
+        gap: "30px",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+        zIndex: 1000,
+      }}
+    >
+      <Link
+        to="/"
+        style={{
+          background: "#f5f5f5",
+          padding: "12px",
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <HomeIcon size={22} />
+      </Link>
+
+      <Link
+        to="/enviar"
+        style={{
+          background: "#f5f5f5",
+          padding: "12px",
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <Send size={22} />
+      </Link>
+
+      <Link
+        to="/historico"
+        style={{
+          background: "#f5f5f5",
+          padding: "12px",
+          borderRadius: "50%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <History size={22} />
+      </Link>
+    </div>
+  );
+
+  return (
+    <div className="container" style={{ padding: 12 }}>
+      <div className="card" style={{ padding: 16 }}>
+        <h2 style={{ margin: 0 }}>Bem-vindo ao PIX — Conta Demo</h2>
+        <p className="small" style={{ marginTop: 8, color: "#6b7280" }}>
+          Interface clara e moderna para demonstrar validação de transações via IA. 
+          Use <strong>Enviar PIX</strong> para simular uma transferência.
+        </p>
+
+        <div style={{ display: "flex", gap: 12, marginTop: 18, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 220 }} className="card">
+            <div style={{ fontSize: 12, color: "#6b7280" }}>Saldo disponível</div>
+            <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6 }}>
+              R$ {Number(saldo).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+            </div>
+            <div className="small" style={{ marginTop: 8, color: "#6b7280" }}>
+              Conta: Conta de Teste • BR
+            </div>
           </div>
 
-          <div style={{width:220}} className="card">
-            <div style={{fontSize:12, color:"#6b7280"}}>Última transação</div>
-            <div style={{marginTop:6, fontWeight:700}}>R$ 120,00 → Loja Demo</div>
-            <div className="small" style={{marginTop:8}}>Tudo ok</div>
+          <div style={{ width: 260, minWidth: 220 }} className="card">
+            <div style={{ fontSize: 12, color: "#6b7280" }}>Última transação</div>
+
+            {loading ? (
+              <div style={{ marginTop: 8 }} className="small">Carregando...</div>
+            ) : ultima ? (
+              <div style={{ marginTop: 6 }}>
+                <div style={{ fontWeight: 700 }}>
+                  R$ {Number(ultima.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} → {ultima.destinatario}
+                </div>
+                <div className="small" style={{ marginTop: 8, color: "#10b981" }}>Tudo ok</div>
+              </div>
+            ) : (
+              <div style={{ marginTop: 6 }} className="small">Sem transações</div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* MENU FIXO */}
+      <MenuInferior />
     </div>
   );
 }
