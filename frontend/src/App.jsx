@@ -10,6 +10,7 @@ import Transacao from "./pages/Transacao";
 import WelcomeModal from "./components/WelcomeModal";
 import BottomMenu from "./components/BottomMenu";
 import "./index.css";
+import Navbar from "./components/Navbar";
 
 export default function App() {
   const [showModal, setShowModal] = useState(false);
@@ -33,7 +34,7 @@ export default function App() {
         
         {/* Modal diretamente aqui */}
         {showModal && <WelcomeModal onClose={closeModal} />}
-
+        <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/enviar" element={<EnviarPix />} />
