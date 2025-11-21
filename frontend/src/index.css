@@ -90,29 +90,3 @@ html,body,#root { height: 100%; margin: 0; background: var(--bg); color: #0f172a
 .modal .foot { display:flex; gap:8px; margin-top:12px; }
 .result-ok { color: var(--accent); font-weight:700; }
 .result-bad { color: var(--danger); font-weight:700; }
-
-/* ---------------- DARK MODE ---------------- */
-html.dark {
-  --bg: #0f172a;
-  --card: #1e293b;
-  --muted: #cbd5e1;
-  --primary: #34d399;
-  --accent: #10b981;
-  --danger: #f87171;
-  --border: #334155;
-  color: #f1f5f9;
-}
-
-html.dark body {
-  background: var(--bg);
-  color: #f1f5f9;
-}
-
-html.dark .card {
-  background: var(--card);
-}
-
-html.dark .navbar,
-html.dark .modal {
-  background: var(--card);
-}
