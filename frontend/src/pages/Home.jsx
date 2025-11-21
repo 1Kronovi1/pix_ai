@@ -35,7 +35,6 @@ export default function Home() {
     return () => (mounted = false);
   }, []);
 
-  // 🔥 Componente do MENU FIXO
   return (
     <div className="container" style={{ padding: 12 }}>
       <div className="card" style={{ padding: 16 }}>
@@ -73,6 +72,23 @@ export default function Home() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* ============================
+          Créditos no rodapé da Home
+          ============================ */}
+      <div style={{ textAlign: "center", marginTop: 20, padding: 10, opacity: 0.7 }}>
+        <p style={{ margin: 0, fontSize: 13 }}>
+          Sistema Desenvolvido por <strong>Bruno Oliveira</strong>
+        </p>
+        <a
+          href="https://github.com/1Kronovi1"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ fontSize: 13, color: "#6b21a8", textDecoration: "none", fontWeight: 600 }}
+        >
+          GitHub: 1Kronovi1
+        </a>
       </div>
     </div>
   );
