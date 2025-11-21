@@ -100,39 +100,6 @@ export default function EnviarPix() {
             </div>
           </form>
 
-          {/* ===== DROPDOWN FORA DO FORM (IMPORTANTE!) ===== */}
-          <div
-            style={{
-              marginTop: "20px",
-              background: "var(--card-bg)",
-              padding: "15px",
-              borderRadius: "10px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-            }}
-          >
-            <label style={{ fontWeight: "bold", marginBottom: "8px", display: "block" }}>
-              Destinatários disponíveis:
-            </label>
-
-            <p value="">🟢 LojaX — (Seguro)</p>
-            <p value="">🟢 MercadoA — (Seguro)</p>
-            <p value="">🟢 AmigoY — (Seguro)</p>
-            <p value="">🔴 ContaFake — (Suspeito)</p>
-            <p value="">🔴 GolpistaZ — (Suspeito)</p>
-
-            <p style={{ marginTop: "10px", fontSize: "13px", opacity: 0.8 }}>
-              *Esta lista é apenas para visualização.  
-              Digite o nome do destinatário no campo acima.
-            </p>
-          </div>
-
-          {/* ===== RESULTADO ===== */}
-          {error && (
-            <div style={{ marginTop: 12, padding: 12, borderRadius: 10, background: "#fee2e2", color: "#b91c1c" }}>
-              {error}
-            </div>
-          )}
-
           {resultado && (
             <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: "#fff", border: "1px solid #eee" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -167,6 +134,39 @@ export default function EnviarPix() {
                   }}
                 />
               </div>
+            </div>
+          )}
+
+          {/* ===== DROPDOWN FORA DO FORM (IMPORTANTE!) ===== */}
+          <div
+            style={{
+              marginTop: "20px",
+              background: "var(--card-bg)",
+              padding: "15px",
+              borderRadius: "10px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+            }}
+          >
+            <label style={{ fontWeight: "bold", marginBottom: "8px", display: "block" }}>
+              Destinatários disponíveis:
+            </label>
+
+            <p value="">🟢 LojaX — (Seguro)</p>
+            <p value="">🟢 MercadoA — (Seguro)</p>
+            <p value="">🟢 AmigoY — (Seguro)</p>
+            <p value="">🔴 ContaFake — (Suspeito)</p>
+            <p value="">🔴 GolpistaZ — (Suspeito)</p>
+
+            <p style={{ marginTop: "10px", fontSize: "13px", opacity: 0.8 }}>
+              *Esta lista é apenas para visualização.  
+              Digite o nome do destinatário no campo acima.
+            </p>
+          </div>
+
+          {/* ===== RESULTADO ===== */}
+          {error && (
+            <div style={{ marginTop: 12, padding: 12, borderRadius: 10, background: "#fee2e2", color: "#b91c1c" }}>
+              {error}
             </div>
           )}
         </div>
