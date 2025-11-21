@@ -17,7 +17,6 @@ export default function EnviarPix() {
     setError(null);
 
     try {
-      // enviar valor como string (FormData espera string)
       const data = await analisarTransacao({
         remetente,
         destinatario,
@@ -100,6 +99,48 @@ export default function EnviarPix() {
             </div>
           </form>
 
+          {/* ============================
+              🔽 DROPDOWN DE DESTINATÁRIOS
+              ============================ */}
+          <div
+            style={{
+              marginTop: "20px",
+              background: "var(--card-bg)",
+              padding: "15px",
+              borderRadius: "10px",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
+            }}
+          >
+            <label style={{ fontWeight: "bold", marginBottom: "8px", display: "block" }}>
+              Destinatários disponíveis:
+            </label>
+
+            <select
+              style={{
+                width: "100%",
+                padding: "10px",
+                borderRadius: "8px",
+                border: "1px solid var(--border-color)",
+                background: "var(--input-bg)",
+                color: "var(--text-color)",
+                cursor: "pointer"
+              }}
+              defaultValue=""
+            >
+              <option value="" disabled>Selecione para visualizar</option>
+              <option value="LojaX">🟢 LojaX — (Seguro)</option>
+              <option value="MercadoA">🟢 MercadoA — (Seguro)</option>
+              <option value="AmigoY">🟢 AmigoY — (Seguro)</option>
+              <option value="ContaFake">🔴 ContaFake — (Suspeito)</option>
+              <option value="GolpistaZ">🔴 GolpistaZ — (Suspeito)</option>
+            </select>
+
+            <p style={{ marginTop: "10px", fontSize: "13px", opacity: 0.8 }}>
+              *Esta lista serve apenas para consulta.  
+              Digite o nome do destinatário no campo acima.
+            </p>
+          </div>
+
           {error && (
             <div style={{ marginTop: 12, padding: 12, borderRadius: 10, background: "#fee2e2", color: "#b91c1c" }}>
               {error}
@@ -124,12 +165,10 @@ export default function EnviarPix() {
                 </div>
               </div>
 
-              {/* barra de risco */}
               <div style={{ marginTop: 12, height: 10, borderRadius: 8, background: "#e6eef3", overflow: "hidden" }}>
                 <div
                   style={{
                     height: "100%",
-                    // transform score (negativo) to 0-100 for visualization in a safe way
                     width: `${Math.min(100, Math.max(0, (Number(resultado.score_risco) + 1.5) / 2.5 * 100))}%`,
                     background: resultado.status === "suspeito" ? "#ef4444" : "#10b981",
                     transition: "width 700ms ease"
