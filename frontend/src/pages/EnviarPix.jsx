@@ -2,6 +2,81 @@
 import React, { useState } from "react";
 import { analisarTransacao } from "../api";
 
+function DropdownDestinatariosVisual() {
+  const [open, setOpen] = useState(false);
+
+  const destinatarios = [
+    { nome: "LojaX", tipo: "safe" },
+    { nome: "MercadoA", tipo: "safe" },
+    { nome: "AmigoY", tipo: "safe" },
+    { nome: "ContaFake", tipo: "danger" },
+    { nome: "GolpistaZ", tipo: "danger" }
+  ];
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        style={{
+          width: "100%",
+          padding: "10px",
+          borderRadius: "8px",
+          border: "1px solid var(--border-color)",
+          background: "var(--input-bg)",
+          color: "var(--text-color)",
+          fontWeight: "bold",
+          cursor: "pointer"
+        }}
+      >
+        Destinatários disponíveis {open ? "▲" : "▼"}
+      </button>
+
+      {open && (
+        <div
+          style={{
+            marginTop: "10px",
+            borderRadius: "8px",
+            padding: "10px",
+            background: "var(--input-bg)",
+            border: "1px solid var(--border-color)"
+          }}
+        >
+          {destinatarios.map((d, i) => (
+            <div
+              key={i}
+              style={{
+                padding: "8px",
+                borderRadius: "6px",
+                marginBottom: "6px",
+                fontWeight: "bold",
+                userSelect: "none",
+                cursor: "default",
+                background:
+                  d.tipo === "safe" ? "#e7ffe7" : "#ffe6e6",
+                color:
+                  d.tipo === "safe" ? "#1d7d32" : "#b30000"
+              }}
+            >
+              {d.tipo === "safe" ? "🟢" : "🔴"} {d.nome}
+            </div>
+          ))}
+
+          <p
+            style={{
+              marginTop: "8px",
+              fontSize: "12px",
+              opacity: 0.7
+            }}
+          >
+            *Apenas para consulta. Digite o nome no campo acima.
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
 export default function EnviarPix() {
   const [remetente, setRemetente] = useState("");
   const [destinatario, setDestinatario] = useState("");
@@ -111,72 +186,8 @@ export default function EnviarPix() {
               boxShadow: "0 2px 6px rgba(0,0,0,0.1)"
             }}
           >
-            <label style={{ fontWeight: "bold", marginBottom: "8px", display: "block" }}>
-              Destinatários disponíveis:
-            </label>
-
-            <select
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "8px",
-                border: "1px solid var(--border-color)",
-                background: "var(--input-bg)",
-                color: "var(--text-color)",
-                cursor: "pointer"
-              }}
-              defaultValue=""
-            >
-              <option value="" disabled>Selecione para visualizar</option>
-              <option value="LojaX">🟢 LojaX — (Seguro)</option>
-              <option value="MercadoA">🟢 MercadoA — (Seguro)</option>
-              <option value="AmigoY">🟢 AmigoY — (Seguro)</option>
-              <option value="ContaFake">🔴 ContaFake — (Suspeito)</option>
-              <option value="GolpistaZ">🔴 GolpistaZ — (Suspeito)</option>
-            </select>
-
-            <p style={{ marginTop: "10px", fontSize: "13px", opacity: 0.8 }}>
-              *Esta lista serve apenas para consulta.  
-              Digite o nome do destinatário no campo acima.
-            </p>
+            <DropdownDestinatariosVisual />
           </div>
-
-          {error && (
-            <div style={{ marginTop: 12, padding: 12, borderRadius: 10, background: "#fee2e2", color: "#b91c1c" }}>
-              {error}
-            </div>
-          )}
-
-          {resultado && (
-            <div style={{ marginTop: 16, padding: 14, borderRadius: 10, background: "#fff", border: "1px solid #eee" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <div style={{ fontSize: 14, color: resultado.status === "suspeito" ? "#b91c1c" : "#059669", fontWeight: 800 }}>
-                    {resultado.status === "suspeito" ? "🚨 Transação Suspeita" : "✅ Transação Segura"}
-                  </div>
-                  <div style={{ fontSize: 13, color: "#6b7280" }}>{resultado.mensagem}</div>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 12, color: "#6b7280" }}>Score</div>
-                  <div style={{ fontWeight: 800, fontSize: 16 }}>{resultado.score_risco}</div>
-                  {resultado.boost_aplicado !== undefined && (
-                    <div style={{ fontSize: 11, color: "#9ca3af" }}>Boost: {resultado.boost_aplicado}</div>
-                  )}
-                </div>
-              </div>
-
-              <div style={{ marginTop: 12, height: 10, borderRadius: 8, background: "#e6eef3", overflow: "hidden" }}>
-                <div
-                  style={{
-                    height: "100%",
-                    width: `${Math.min(100, Math.max(0, (Number(resultado.score_risco) + 1.5) / 2.5 * 100))}%`,
-                    background: resultado.status === "suspeito" ? "#ef4444" : "#10b981",
-                    transition: "width 700ms ease"
-                  }}
-                />
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>
