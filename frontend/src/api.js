@@ -1,9 +1,10 @@
 // src/api.js
 import axios from "axios";
 
+// URL CORRETA DO BACKEND NA RENDER
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000",
-  timeout: 8000,
+  baseURL: "https://pix-ai-back.onrender.com",
+  timeout: 10000,
 });
 
 export default api;
