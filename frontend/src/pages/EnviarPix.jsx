@@ -114,24 +114,11 @@ export default function EnviarPix() {
               Destinatários disponíveis:
             </label>
 
-            <select
-              style={{
-                width: "100%",
-                padding: "10px",
-                borderRadius: "8px",
-                border: "1px solid var(--border-color)",
-                background: "var(--input-bg)",
-                color: "var(--text-color)",
-              }}
-              disabled
-              value=""
-            >
-              <option value="">🟢 LojaX — (Seguro)</option>
-              <option value="">🟢 MercadoA — (Seguro)</option>
-              <option value="">🟢 AmigoY — (Seguro)</option>
-              <option value="">🔴 ContaFake — (Suspeito)</option>
-              <option value="">🔴 GolpistaZ — (Suspeito)</option>
-            </select>
+            <p value="">🟢 LojaX — (Seguro)</p>
+            <p value="">🟢 MercadoA — (Seguro)</p>
+            <p value="">🟢 AmigoY — (Seguro)</p>
+            <p value="">🔴 ContaFake — (Suspeito)</p>
+            <p value="">🔴 GolpistaZ — (Suspeito)</p>
 
             <p style={{ marginTop: "10px", fontSize: "13px", opacity: 0.8 }}>
               *Esta lista é apenas para visualização.  
