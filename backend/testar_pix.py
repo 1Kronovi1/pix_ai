@@ -19,7 +19,7 @@ except:
 # =============================================
 # 2. Criar 200 transações aleatórias
 # =============================================
-total = 200
+total = 30
 for _ in range(total):
     remetente = random.choice(remetentes)
     destinatario = random.choice(destinatarios)

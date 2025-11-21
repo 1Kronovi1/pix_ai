@@ -1,27 +1,27 @@
 // src/App.jsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
 
 import Home from "./pages/Home";
-import EnviarPix from "./pages/EnviarPix";   // sua tela antiga (pode manter)
+import EnviarPix from "./pages/EnviarPix";
 import Historico from "./pages/Historico";
 import Transacao from "./pages/Transacao";
 
+import BottomMenu from "./components/BottomMenu";
 import "./index.css";
 
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />
+      <div className="app-container" style={{ paddingBottom: "80px" }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/enviar" element={<EnviarPix />} />
+          <Route path="/historico" element={<Historico />} />
+          <Route path="/transacao" element={<Transacao />} />
+        </Routes>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/enviar" element={<EnviarPix />} />
-        <Route path="/historico" element={<Historico />} />
-
-        {/* Nova rota da tela PIX com IA */}
-        <Route path="/transacao" element={<Transacao />} />
-      </Routes>
+        <BottomMenu />
+      </div>
     </BrowserRouter>
   );
 }
