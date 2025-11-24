@@ -52,32 +52,34 @@ export default function Home() {
         </div>
 
         <div style={{ display: "flex", gap: 12, marginTop: 18, flexWrap: "wrap",padding: 16 }}>
-          <div style={{ flex: 1, minWidth: 220 }} className="card">
-            <div style={{ fontSize: 12, color: "#6b7280" }}>Saldo disponível</div>
-            <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, color:"rgba(123, 39, 192, 0.77)"}}>
-              R$ {Number(saldo).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-            </div>
-            <div className="small" style={{ marginTop: 8, color: "#6b7280" }}>
-              ( Conta meramente demonstrativa )
-            </div>
-          </div>
-
-          <div style={{ width: 260, minWidth: 220 }} className="card">
-            <div style={{ fontSize: 12, color: "#6b7280" }}>Última transação</div>
-
-            {loading ? (
-              <div style={{ marginTop: 8 }} className="small">Carregando...</div>
-            ) : ultima ? (
-              <div style={{ marginTop: 6 }}>
-                <div style={{ fontWeight: 700, color:"rgba(123, 39, 192, 0.77)" }}>
-                  R$ {Number(ultima.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} → {ultima.destinatario}
+          <div className="container-saldoCat" style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
+            <div className="container-saldo/Historico">
+              <div style={{ flex: 1, minWidth: 220 }} className="card">
+                <div style={{ fontSize: 12, color: "#6b7280" }}>Saldo disponível</div>
+                <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, color:"rgba(123, 39, 192, 0.77)"}}>
+                  R$ {Number(saldo).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                </div>
+                <div className="small" style={{ marginTop: 8, color: "#6b7280" }}>
+                  ( Conta meramente demonstrativa )
                 </div>
               </div>
-            ) : (
-              <div style={{ marginTop: 6 }} className="small">Sem transações</div>
-            )}
+              <div style={{ width: 260, minWidth: 220 }} className="card">
+                <div style={{ fontSize: 12, color: "#6b7280" }}>Última transação</div>
+                {loading ? (
+                  <div style={{ marginTop: 8 }} className="small">Carregando...</div>
+                ) : ultima ? (
+                  <div style={{ marginTop: 6 }}>
+                    <div style={{ fontWeight: 700, color:"rgba(123, 39, 192, 0.77)" }}>
+                      R$ {Number(ultima.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} → {ultima.destinatario}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ marginTop: 6 }} className="small">Sem transações</div>
+                )}
+              </div>
+            </div>
+            <img src={ catPng } alt="" style={{ width: "300px", }}/>
           </div>
-          <img src={ catPng } alt="" style={{ width: "300px", }}/>
         </div>
       </div>
 
