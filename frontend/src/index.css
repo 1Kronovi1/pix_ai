@@ -110,6 +110,11 @@ html,body,#root { height: 100%; margin: 0; background: var(--bg); color: #0f172a
   margin-top: 25px;
   color: rgba(123, 39, 192, 0.77);
 }
+.history-top-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
 .btn {
   padding: 12px 14px;
   border-radius: 10px;

@@ -1,11 +1,13 @@
 // src/pages/Historico.jsx
 import React, { useEffect, useState } from "react";
 import api from "../api";
+import ConfirmModal from "../components/ConfirmModal";
 
 export default function Historico() {
   const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
   const [clearing, setClearing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   async function fetchTransacoes() {
     setLoading(true);
@@ -46,13 +48,17 @@ export default function Historico() {
     }
   }
 
-  async function limpar() {
+  function limpar() {
+    setShowConfirm(true);
+  }
+
+  async function confirmarLimpeza() {
     // eslint-disable-next-line no-restricted-globals
-    if (!confirm("Tem certeza que deseja limpar o histórico?")) return;
     setClearing(true);
     try {
       await api.delete("/transacoes/limpar");
       setRows([]);
+      setShowConfirm(false);
     } catch (err) {
       console.error(err);
       alert("Erro ao limpar histórico.");
@@ -69,27 +75,29 @@ export default function Historico() {
   }, []);
 
   return (
-    <div className="container" style={{ padding: 12 }}>
-      <div className="card" style={{ padding: 12 }}>
+    <div className="container" style={{ padding: 0, margin: 0 }}>
+      <div style={{ padding: 25, backgroundColor: "white" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h3 style={{ margin: 0 }}>Histórico de Transações</h3>
-          <div>
-            <button
-              onClick={fetchTransacoes}
-              className="btn ghost"
-              style={{ marginRight: 8 }}
-              disabled={loading}
-            >
-              Atualizar
-            </button>
-
-            <button
-              onClick={limpar}
-              className="btn btn-danger"
-              disabled={clearing}
-            >
-              {clearing ? "Limpando..." : "Limpar Histórico"}
-            </button>
+          <div className="history-top-container">
+            <h3 style={{ margin: 0, color: "var(--purple)", fontWeight: "800" }}>Histórico de Transações</h3>
+            <div>
+              <button
+                onClick={fetchTransacoes}
+                className="btn ghost"
+                style={{ marginRight: 8 }}
+                disabled={loading}
+              >
+                Atualizar
+              </button>
+              <button
+                onClick={limpar}
+                className="btn btn-danger"
+                disabled={clearing}
+                style={{ backgroundColor: "var(--purple)" }}
+              >
+                {clearing ? "Limpando..." : "Limpar Histórico"}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -128,13 +136,13 @@ export default function Historico() {
                       {r.remetente ? r.remetente.charAt(0).toUpperCase() : "R"}
                     </div>
                     <div>
-                      <div style={{ fontWeight: 700 }}>{r.destinatario}</div>
+                      <div style={{ fontWeight: 700, color: "gray" }}>{r.destinatario}</div>
                       <div className="small" style={{ color: "#6b7280" }}>{r.timestamp || ""}</div>
                     </div>
                   </div>
 
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontWeight: 800 }}>
+                    <div style={{ fontWeight: 800, color: "var(--purple)" }}>
                       R$ {Number(r.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                     </div>
                     <div className="small" style={{ color: r.status === "suspeito" ? "#b91c1c" : "#059669" }}>
@@ -146,6 +154,12 @@ export default function Historico() {
             </div>
           )}
         </div>
+        <ConfirmModal
+          isOpen={showConfirm}
+          message="Tem certeza que deseja limpar o histórico?"
+          onConfirm={confirmarLimpeza}
+          onCancel={() => setShowConfirm(false)}
+        />
       </div>
     </div>
   );

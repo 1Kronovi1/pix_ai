@@ -42,7 +42,7 @@ export default function EnviarPix() {
   return (
     <div style={{ minHeight: "80vh", display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 540 }}>
-        <div style={{ padding: 20, backgroundColor: "white" }}>
+        <div style={{ padding: 25, backgroundColor: "white" }}>
           <h2 style={{ margin: 0, marginBottom: 8, fontSize: "1.7rem", fontWeight: "800", color: "var(--purple)" }}>Transferir</h2>
           <p className="small" style={{ marginTop: 6, marginBottom: 12, color: "#6b7280" }}>
             Preencha primeiro com seu nome, nome do destinatário (um presente na lista) e o valor.
