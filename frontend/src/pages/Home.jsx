@@ -54,7 +54,7 @@ export default function Home() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div className="container-saldoCat" style={{ width: "100%" ,display: "flex", flexDirection: "column", alignItems: "flex-start", }}>
             <div className="container-saldo/Historico" style={{ gap: 12 }}>
-              <div style={{ flex: 1, minWidth: 220 }} className="card">
+              <div style={{ flex: 1, minWidth: 220 }} className="card-saldo">
                 <div style={{ fontSize: 12, color: "#6b7280" }}>Saldo disponível</div>
                 <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, color:"rgba(123, 39, 192, 0.77)"}}>
                   R$ {Number(saldo).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
@@ -63,7 +63,7 @@ export default function Home() {
                   ( Conta meramente demonstrativa )
                 </div>
               </div>
-              <div style={{ width: 260, minWidth: 220 }} className="card">
+              <div style={{ width: 260, minWidth: 220 }} className="card-historico">
                 <div style={{ fontSize: 12, color: "#6b7280" }}>Última transação</div>
                 {loading ? (
                   <div style={{ marginTop: 8 }} className="small">Carregando...</div>

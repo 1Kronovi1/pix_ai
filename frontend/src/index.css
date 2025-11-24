@@ -49,6 +49,19 @@ html,body,#root { height: 100%; margin: 0; background: var(--bg); color: #0f172a
   padding: 18px;
 }
 
+.card-saldo {
+  width: 100vw;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  padding: 18px;
+}
+
+.card-historico {
+  width: 100vw;
+  background: var(--card);
+  padding: 18px;
+}
+
 /* Navbar */
 .navbar {
   display:flex;
