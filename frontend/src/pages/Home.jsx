@@ -77,7 +77,7 @@ export default function Home() {
               <div style={{ marginTop: 6 }} className="small">Sem transações</div>
             )}
           </div>
-          
+          <img src={ catPng } alt="" style={{ width: "300px", }}/>
         </div>
       </div>
 
