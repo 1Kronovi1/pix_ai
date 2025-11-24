@@ -79,7 +79,7 @@ export default function Historico() {
       <div style={{ padding: 25, backgroundColor: "white" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div className="history-top-container">
-            <h3 style={{ margin: 0, color: "var(--purple)", fontWeight: "800" }}>Histórico de Transações</h3>
+            <h3 style={{ margin: 0, marginBottom: "15px", color: "var(--purple)", fontWeight: "800", fontSize: "1.7rem" }}>Histórico de Transações</h3>
             <div>
               <button
                 onClick={fetchTransacoes}

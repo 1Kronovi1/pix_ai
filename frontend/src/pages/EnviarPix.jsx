@@ -83,7 +83,7 @@ export default function EnviarPix() {
               <button
                 className="btn"
                 type="submit"
-                style={{ flex: 1, background: "#6b21a8", color: "#fff", fontWeight: 700 }}
+                style={{ flex: 1, background: "var(--purple)", color: "#fff", fontWeight: 700 }}
                 disabled={loading}
               >
                 {loading ? "Analisando..." : "Continuar"}
