@@ -38,7 +38,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container" style={{ padding: 0, margin: 0}}>
+    <div className="container" style={{ padding: 0, margin: 0, overflow: "hidden"}}>
       <div className="card" style={{ padding: 0 }}>
         <div className="container-top">
           <div className="container-user">
@@ -51,9 +51,9 @@ export default function Home() {
           </p>
         </div>
 
-        <div style={{ display: "flex", gap: 12, marginTop: 18, flexWrap: "wrap",padding: 16 }}>
-          <div className="container-saldoCat" style={{ display: "flex", flexDirection: "column", alignItems: "center", }}>
-            <div className="container-saldo/Historico">
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+          <div className="container-saldoCat" style={{ width: "100%" ,display: "flex", flexDirection: "column", alignItems: "flex-start", }}>
+            <div className="container-saldo/Historico" style={{ gap: 12 }}>
               <div style={{ flex: 1, minWidth: 220 }} className="card">
                 <div style={{ fontSize: 12, color: "#6b7280" }}>Saldo disponível</div>
                 <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, color:"rgba(123, 39, 192, 0.77)"}}>
@@ -78,7 +78,7 @@ export default function Home() {
                 )}
               </div>
             </div>
-            <img src={ catPng } alt="" style={{ width: "300px", }}/>
+            <img src={ catPng } alt="" style={{ width: "210px", alignSelf: "center" }}/>
           </div>
         </div>
       </div>
