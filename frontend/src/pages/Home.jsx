@@ -4,6 +4,7 @@ import api from "../api";
 import { Link } from "react-router-dom";
 import { Home as HomeIcon, Send, History, CircleUser } from "lucide-react";
 import { CircleUserRound } from 'lucide-react';
+import catPng from '../images/cat.png'
 
 export default function Home() {
   const [saldo] = useState(3250.0);
@@ -76,6 +77,7 @@ export default function Home() {
               <div style={{ marginTop: 6 }} className="small">Sem transações</div>
             )}
           </div>
+          
         </div>
       </div>
 

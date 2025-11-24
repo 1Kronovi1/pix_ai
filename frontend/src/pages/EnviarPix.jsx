@@ -43,9 +43,9 @@ export default function EnviarPix() {
     <div style={{ minHeight: "80vh", padding: 12, display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 540 }}>
         <div className="card" style={{ padding: 16 }}>
-          <h2 style={{ margin: 0, marginBottom: 8 }}>💸 Enviar PIX</h2>
+          <h2 style={{ margin: 0, marginBottom: 8 }}>Transferir</h2>
           <p className="small" style={{ marginTop: 6, marginBottom: 12, color: "#6b7280" }}>
-            Preencha os dados e confirme para análise automática. A IA analisará risco e retornará resultado.
+            Preencha primeiro com seu nome, nome do destinatário (um presente na lista) e o valor.
           </p>
 
           {/* ===== FORMULÁRIO ===== */}
