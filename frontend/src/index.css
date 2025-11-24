@@ -21,10 +21,30 @@ html,body,#root { height: 100%; margin: 0; background: var(--bg); color: #0f172a
   padding: 20px;
 }
 
+.container-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.container-top {
+  background-color: rgba(123, 39, 192, 0.77);
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 8px;
+  padding-bottom: 5px;
+}
+
+.user-title {
+  font-size: 0.9rem;
+}
+
+.icon {
+  color: rgba(231, 232, 236, 0.711);
+}
+
 .card {
   background: var(--card);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
   border: 1px solid var(--border);
   padding: 18px;
 }

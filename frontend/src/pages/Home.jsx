@@ -2,7 +2,8 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import { Link } from "react-router-dom";
-import { Home as HomeIcon, Send, History } from "lucide-react";
+import { Home as HomeIcon, Send, History, CircleUser } from "lucide-react";
+import { CircleUserRound } from 'lucide-react';
 
 export default function Home() {
   const [saldo] = useState(3250.0);
@@ -36,22 +37,27 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container" style={{ padding: 12 }}>
-      <div className="card" style={{ padding: 16 }}>
-        <h2 style={{ margin: 0 }}>Bem-vindo ao PIX — Conta Demo</h2>
-        <p className="small" style={{ marginTop: 8, color: "#6b7280" }}>
-          Interface clara e moderna para demonstrar validação de transações via IA. 
-          Use <strong>Enviar PIX</strong> para simular uma transferência.
-        </p>
+    <div className="container" style={{ padding: 0, margin: 0}}>
+      <div className="card" style={{ padding: 0 }}>
+        <div className="container-top">
+          <div className="container-user">
+            <CircleUserRound className="icon"/>
+            <h2 className="user-title" style={{ margin: 0, color: "white" }}>Admin demo</h2>
+          </div>
+          <p className="small" style={{ marginTop: 8, color: "#ffffff92" }}>
+            Interface demonstrativa para visualizar a validação de transações via IA.
+            Aperte <strong><Send size={12} /></strong> para simular uma transferência.
+          </p>
+        </div>
 
-        <div style={{ display: "flex", gap: 12, marginTop: 18, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 12, marginTop: 18, flexWrap: "wrap",padding: 16 }}>
           <div style={{ flex: 1, minWidth: 220 }} className="card">
             <div style={{ fontSize: 12, color: "#6b7280" }}>Saldo disponível</div>
-            <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6 }}>
+            <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, color:"rgba(123, 39, 192, 0.77)"}}>
               R$ {Number(saldo).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
             </div>
             <div className="small" style={{ marginTop: 8, color: "#6b7280" }}>
-              Conta: Conta de Teste • BR
+              ( Conta meramente demonstrativa )
             </div>
           </div>
 
@@ -62,10 +68,9 @@ export default function Home() {
               <div style={{ marginTop: 8 }} className="small">Carregando...</div>
             ) : ultima ? (
               <div style={{ marginTop: 6 }}>
-                <div style={{ fontWeight: 700 }}>
+                <div style={{ fontWeight: 700, color:"rgba(123, 39, 192, 0.77)" }}>
                   R$ {Number(ultima.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} → {ultima.destinatario}
                 </div>
-                <div className="small" style={{ marginTop: 8, color: "#10b981" }}>Tudo ok</div>
               </div>
             ) : (
               <div style={{ marginTop: 6 }} className="small">Sem transações</div>
