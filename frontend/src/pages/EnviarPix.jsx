@@ -40,26 +40,26 @@ export default function EnviarPix() {
   };
 
   return (
-    <div style={{ minHeight: "80vh", padding: 12, display: "flex", justifyContent: "center" }}>
+    <div style={{ minHeight: "80vh", display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 540 }}>
-        <div className="card" style={{ padding: 16 }}>
-          <h2 style={{ margin: 0, marginBottom: 8 }}>Transferir</h2>
+        <div style={{ padding: 20, backgroundColor: "white" }}>
+          <h2 style={{ margin: 0, marginBottom: 8, fontSize: "1.7rem", fontWeight: "800", color: "var(--purple)" }}>Transferir</h2>
           <p className="small" style={{ marginTop: 6, marginBottom: 12, color: "#6b7280" }}>
             Preencha primeiro com seu nome, nome do destinatário (um presente na lista) e o valor.
           </p>
 
           {/* ===== FORMULÁRIO ===== */}
           <form onSubmit={submit} style={{ display: "grid", gap: 12 }}>
-            <label style={{ fontWeight: 600 }}>Remetente</label>
+            <label className="label" style={{ fontWeight: 600 }}>Nome</label>
             <input
               className="input"
               value={remetente}
               onChange={(e) => setRemetente(e.target.value)}
-              placeholder="Seu nome (ex: Bruno)"
+              placeholder="eu nome (ex: Bruno)"
               required
             />
 
-            <label style={{ fontWeight: 600 }}>Destinatário (chave)</label>
+            <label className="label" style={{ fontWeight: 600 }}>Destino (chave)</label>
             <input
               className="input"
               value={destinatario}
@@ -68,7 +68,7 @@ export default function EnviarPix() {
               required
             />
 
-            <label style={{ fontWeight: 600 }}>Valor (R$)</label>
+            <label className="label" style={{ fontWeight: 600 }}>Valor (R$)</label>
             <input
               className="input"
               type="number"
@@ -143,21 +143,19 @@ export default function EnviarPix() {
               marginTop: "20px",
               background: "var(--card-bg)",
               padding: "15px",
-              borderRadius: "10px",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
             }}
           >
-            <label style={{ fontWeight: "bold", marginBottom: "8px", display: "block" }}>
+            <label style={{ fontWeight: "bold", marginBottom: "8px", display: "block", color: "var(--purple)" }}>
               Destinatários disponíveis:
             </label>
 
-            <p value="">🟢 LojaX — (Seguro)</p>
-            <p value="">🟢 MercadoA — (Seguro)</p>
-            <p value="">🟢 AmigoY — (Seguro)</p>
-            <p value="">🔴 ContaFake — (Suspeito)</p>
-            <p value="">🔴 GolpistaZ — (Suspeito)</p>
+            <p value="" style={{color: "green", fontSize: "14px"}}>🟢 LojaX — (Seguro)</p>
+            <p value="" style={{color: "green", fontSize: "14px"}}>🟢 MercadoA — (Seguro)</p>
+            <p value="" style={{color: "green", fontSize: "14px"}}>🟢 AmigoY — (Seguro)</p>
+            <p value="" style={{color: "red", fontSize: "14px"}}>🔴 ContaFake — (Suspeito)</p>
+            <p value="" style={{color: "red", fontSize: "14px"}}>🔴 GolpistaZ — (Suspeito)</p>
 
-            <p style={{ marginTop: "10px", fontSize: "13px", opacity: 0.8 }}>
+            <p style={{ marginTop: "10px", fontSize: "13px", opacity: 0.6 }}>
               *Esta lista é apenas para visualização.  
               Digite o nome do destinatário no campo acima.
             </p>

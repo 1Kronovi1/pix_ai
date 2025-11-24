@@ -43,9 +43,9 @@ export default function Home() {
         <div className="container-top">
           <div className="container-user">
             <CircleUserRound className="icon"/>
-            <h2 className="user-title" style={{ margin: 0, color: "white" }}>Admin demo</h2>
+            <h2 className="user-title" style={{ margin: 0, color: "white", fontSize: "1.6rem" }}>Admin demo</h2>
           </div>
-          <p className="small" style={{ marginTop: 8, color: "#ffffff92" }}>
+          <p className="small" style={{ marginTop: 8, color: "#ffffff92", padding: 14 }}>
             Interface demonstrativa para visualizar a validação de transações via IA.
             Aperte <strong><Send size={12} /></strong> para simular uma transferência.
           </p>
@@ -60,7 +60,7 @@ export default function Home() {
                   R$ {Number(saldo).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </div>
                 <div className="small" style={{ marginTop: 8, color: "#6b7280" }}>
-                  ( Conta meramente demonstrativa )
+                  ( Valor meramente demonstrativo )
                 </div>
               </div>
               <div style={{ width: 260, minWidth: 220 }} className="card-historico">
