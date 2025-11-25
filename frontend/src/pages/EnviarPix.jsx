@@ -1,6 +1,7 @@
 // src/pages/EnviarPix.jsx
 import React, { useState } from "react";
 import { analisarTransacao } from "../api";
+import { motion } from "framer-motion";
 
 export default function EnviarPix() {
   const [remetente, setRemetente] = useState("");
@@ -40,7 +41,7 @@ export default function EnviarPix() {
   };
 
   return (
-    <div style={{ minHeight: "80vh", display: "flex", justifyContent: "center" }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} style={{ minHeight: "80vh", display: "flex", justifyContent: "center" }}>
       <div style={{ width: "100%", maxWidth: 540 }}>
         <div style={{ padding: 25, backgroundColor: "white" }}>
           <h2 style={{ margin: 0, marginBottom: 8, fontSize: "1.7rem", fontWeight: "800", color: "var(--purple)" }}>Transferir</h2>
@@ -169,6 +170,6 @@ export default function EnviarPix() {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

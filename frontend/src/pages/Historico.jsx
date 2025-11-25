@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../api";
 import ConfirmModal from "../components/ConfirmModal";
+import { motion } from "framer-motion";
 
 export default function Historico() {
   const [rows, setRows] = useState([]);
@@ -75,7 +76,7 @@ export default function Historico() {
   }, []);
 
   return (
-    <div className="container" style={{ padding: 0, margin: 0 }}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0 }} className="container" style={{ padding: 0, margin: 0 }}>
       <div style={{ padding: 25, backgroundColor: "white" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div className="history-top-container">
@@ -109,7 +110,10 @@ export default function Historico() {
           ) : (
             <div style={{ display: "grid", gap: 10 }}>
               {rows.map((r) => (
-                <div
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.6, delay: 0.3 }}
                   key={r.id}
                   className="card"
                   style={{
@@ -149,7 +153,7 @@ export default function Historico() {
                       {r.status === "suspeito" ? "Suspeito" : "Seguro"}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           )}
@@ -161,6 +165,6 @@ export default function Historico() {
           onCancel={() => setShowConfirm(false)}
         />
       </div>
-    </div>
+    </motion.div>
   );
 }

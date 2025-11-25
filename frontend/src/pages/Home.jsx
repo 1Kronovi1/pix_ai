@@ -4,7 +4,8 @@ import api from "../api";
 import { Link } from "react-router-dom";
 import { Home as HomeIcon, Send, History, CircleUser } from "lucide-react";
 import { CircleUserRound } from 'lucide-react';
-import catPng from '../images/cat.png'
+import catPng from '../images/cat.png';
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [saldo] = useState(3250.0);
@@ -38,7 +39,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container" style={{ padding: 0, margin: 0, overflow: "hidden"}}>
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="container" style={{ padding: 0, margin: 0, overflow: "hidden"}}>
       <div className="card" style={{ padding: 0 }}>
         <div className="container-top">
           <div className="container-user">
@@ -53,7 +54,7 @@ export default function Home() {
 
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
           <div className="container-saldoCat" style={{ width: "100%" ,display: "flex", flexDirection: "column", alignItems: "flex-start", }}>
-            <div className="container-saldo/Historico" style={{ gap: 12 }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="container-saldo/Historico" style={{ gap: 12 }}>
               <div style={{ flex: 1, minWidth: 220 }} className="card-saldo">
                 <div style={{ fontSize: 12, color: "#6b7280" }}>Saldo disponível</div>
                 <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, color:"rgba(123, 39, 192, 0.77)"}}>
@@ -77,8 +78,8 @@ export default function Home() {
                   <div style={{ marginTop: 6 }} className="small">Sem transações</div>
                 )}
               </div>
-            </div>
-            <img src={ catPng } alt="" style={{ width: "210px", alignSelf: "center" }}/>
+            </motion.div>
+            <motion.img initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8, delay: 0.4 }} src={ catPng } alt="" style={{ width: "210px", alignSelf: "center" }}/>
           </div>
         </div>
       </div>
@@ -120,6 +121,6 @@ export default function Home() {
           GitHub: 1Kronovi1
         </a>
       </div>
-    </div>
+    </motion.div>
   );
 }
