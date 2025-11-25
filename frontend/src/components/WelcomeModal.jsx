@@ -1,21 +1,25 @@
 import "./WelcomeModal.css";
+import catWelcome from  "../images/catWelcome.png"
 
 export default function WelcomeModal({ onClose }) {
   return (
     <div className="welcome-overlay">
       <div className="welcome-modal">
-        <h2>👋 Bem-vindo!</h2>
+        <div className="welcome-top-container" style={{ width: "100%", display: "flex", flexDirection: "column", gap: "10px" }}>
+          <img src={ catWelcome } style={{width: "140px", alignSelf: "center"}} alt="" />
+          <h2 style={{ alignSelf: "center", color: "var(--purple)" }}>Bem-vindo!</h2>
+        </div>
 
-        <p>
+        <p style={{ lineHeight: "20px" }}>
           Esta é uma aplicação demonstrativa criada para mostrar o funcionamento
           da minha inteligência artificial que analisa transações PIX e avalia se
-          são <strong>seguras</strong> ou <strong>suspeitas</strong>.
+          são <strong style={{color: "red"}}>seguras</strong> ou <strong style={{color: "green"}}>seguras</strong>.
         </p>
 
         <p>
-          <strong>Modo de uso:</strong><br/>
+          <strong style={{color: "var(--purple)", fontWeight: "800"}}>Modo de uso:</strong><br/><br/>
           Vá até a aba <strong>Transferência</strong>, informe seu nome e escolha
-          um destinatário existente do nosso "banco digital" de teste.
+          um destinatário <strong style={{color: "var(--purple)"}}>existente</strong> do nosso "banco digital" de teste.
         </p>
 
         <p>A IA analisará o comportamento do destinatário e exibirá o resultado.</p>
@@ -30,8 +34,8 @@ export default function WelcomeModal({ onClose }) {
           <li className="danger">GolpistaZ (Suspeito)</li>
         </ul>
 
-        <button className="welcome-btn" onClick={onClose}>
-          Entendi 👍
+        <button style={{backgroundColor: "var(--purple)"}} className="welcome-btn" onClick={onClose}>
+          Entendi!
         </button>
       </div>
     </div>
