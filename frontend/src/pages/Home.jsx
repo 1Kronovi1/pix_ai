@@ -57,7 +57,7 @@ export default function Home() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="container-saldo/Historico" style={{ gap: 12 }}>
               <div style={{ flex: 1, minWidth: 220 }} className="card-saldo">
                 <div style={{ fontSize: 12, color: "#6b7280" }}>Saldo disponível</div>
-                <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, color:"rgba(123, 39, 192, 0.77)"}}>
+                <div style={{ fontSize: 22, fontWeight: 800, marginTop: 6, color:"#E11C47"}}>
                   R$ {Number(saldo).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                 </div>
                 <div className="small" style={{ marginTop: 8, color: "#6b7280" }}>
@@ -70,7 +70,7 @@ export default function Home() {
                   <div style={{ marginTop: 8 }} className="small">Carregando...</div>
                 ) : ultima ? (
                   <div style={{ marginTop: 6 }}>
-                    <div style={{ fontWeight: 700, color:"rgba(123, 39, 192, 0.77)" }}>
+                    <div style={{ fontWeight: 700, color:"#E11C47" }}>
                       R$ {Number(ultima.valor).toLocaleString("pt-BR", { minimumFractionDigits: 2 })} → {ultima.destinatario}
                     </div>
                   </div>
@@ -98,7 +98,7 @@ export default function Home() {
           rel="noopener noreferrer"
           style={{
             fontSize: 13,
-            color: "#6b21a8",
+            color: "#E11C47",
             textDecoration: "none",
             fontWeight: 600,
             display: "inline-flex",

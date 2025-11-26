@@ -31,17 +31,17 @@ export default function BottomMenu() {
       }}
     >
       <Link to="/" style={iconStyle}>
-        <Home size={22} stroke={pathname === "/" ? "#7c3aed" : "#000"} />
+        <Home size={22} stroke={pathname === "/" ? "#E11C47" : "#000"} />
       </Link>
 
       <Link to="/enviar" style={iconStyle}>
-        <Send size={22} stroke={pathname === "/enviar" ? "#7c3aed" : "#000"} />
+        <Send size={22} stroke={pathname === "/enviar" ? "#E11C47" : "#000"} />
       </Link>
 
       <Link to="/historico" style={iconStyle}>
         <History
           size={22}
-          stroke={pathname === "/historico" ? "#7c3aed" : "#000"}
+          stroke={pathname === "/historico" ? "#E11C47" : "#000"}
         />
       </Link>
     </div>

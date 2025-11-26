@@ -4,7 +4,7 @@
   --card: #ffffff;
   --muted: #6b7280;
   --primary: #0f766e;
-  --purple: rgba(123, 39, 192, 0.77);
+  --purple: #E11C47;
   --accent: #10b981;
   --danger: #ef4444;
   --border: #e6e9ee;
@@ -32,11 +32,14 @@ html,body,#root { height: 100%; margin: 0; background: var(--bg); color: #0f172a
 }
 
 .container-top {
-  background-color: rgba(123, 39, 192, 0.77);
+  background-color: #E11C47;
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 8px;
   padding-bottom: 5px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
+  margin-bottom: 20px;
 }
 
 .user-title {
@@ -108,7 +111,7 @@ html,body,#root { height: 100%; margin: 0; background: var(--bg); color: #0f172a
 }
 .label {
   margin-top: 25px;
-  color: rgba(123, 39, 192, 0.77);
+  color: #E11C47;
 }
 .history-top-container {
   display: flex;
